@@ -1,0 +1,43 @@
+name: Sync Google Drive to GitHub
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: drive-sync
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Sync from Google Drive using rclone
+        env:
+          SA_JSON: ${{ secrets.GDRIVE_SA_JSON }}
+        run: |
+          echo "$SA_JSON" > /tmp/sa.json
+          sudo apt-get update && sudo apt-get install -y rclone
+          rclone copy :drive: "./INFO S5 -2026-2027" \
+            --drive-service-account-file=/tmp/sa.json \
+            --drive-root-folder-id=1qf3EQw_gv92r8HyXJRfypWLnFaJm--e5 \
+            --drive-acknowledge-abuse \
+            --ignore-errors \
+            --transfers=8 \
+            -v
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          # حذف أي ملف يتجاوز حجمه 95MB تلقائياً لكي لا يرفض GitHub عملية الرفع
+          find . -type f -size +95M -not -path "./.git/*" -delete
+          git add .
+          git diff --staged --quiet || (git commit -m "Auto-sync files from Google Drive" && git push)
