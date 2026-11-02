@@ -20,7 +20,7 @@ jobs:
 
       - name: Download Files from Google Drive
         run: |
-          gdown --folder https://drive.google.com/drive/folders/1qf3EQw_gv92r8HyXJRfypWLnFaJm--e5 -O ./
+          gdown --folder https://drive.google.com/drive/folders/1qf3EQw_gv92r8HyXJRfypWLnFaJm--e5 -O ./ --continue || true 
 
       - name: Commit and Push Changes
         run: |
