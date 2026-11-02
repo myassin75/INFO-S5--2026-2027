@@ -1,0 +1,31 @@
+name: Sync Google Drive to GitHub
+
+on:
+  schedule:
+    # يعمل تلقائياً كل ساعة (يمكنك تعديل الوقت كما تريد)
+    - cron: '0 * * * *'
+  workflow_dispatch: # يسمح لك بتشغيله يدوياً بضغطة زر متى شئت
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install gdown
+        run: pip install gdown
+
+      - name: Download Files from Google Drive
+        run: |
+          gdown --folder https://drive.google.com/drive/folders/1qf3EQw_gv92r8HyXJRfypWLnFaJm--e5 -O ./drive_files --remaining-ok
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git diff --staged --quiet || (git commit -m "Auto-sync files from Google Drive" && git push)
