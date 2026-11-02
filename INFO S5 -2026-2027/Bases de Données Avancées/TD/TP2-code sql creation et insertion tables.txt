@@ -1,0 +1,76 @@
+CREATE DATABASE IF NOT EXISTS boutique;
+
+CREATE TABLE client ( 
+	 id_client        INT PRIMARY KEY,  
+         nom              VARCHAR(50)  NOT NULL,     
+         prenom           VARCHAR(50)  NOT NULL,     
+         ville            VARCHAR(50),     
+	 date_inscription DATE ); 
+
+
+CREATE TABLE produit (     
+	id_produit    INT PRIMARY KEY,     
+	designation   VARCHAR(100) NOT NULL,     
+	categorie     VARCHAR(50),
+   	 prix_unitaire NUMERIC(10,2) CHECK (prix_unitaire >= 0),     
+	stock         INT DEFAULT 0 ); 
+
+CREATE TABLE commande (     
+	id_commande   INT PRIMARY KEY,     
+	id_client     INT NOT NULL REFERENCES client(id_client),     
+	date_commande DATE NOT NULL,     
+	statut        VARCHAR(20) CHECK (statut IN ('en_cours','livree','annulee')) ); 
+
+CREATE TABLE ligne_commande (     
+	id_commande INT REFERENCES commande(id_commande),     
+	id_produit  INT REFERENCES produit(id_produit),    
+	 quantite    INT NOT NULL CHECK (quantite > 0),     
+	PRIMARY KEY (id_commande, id_produit)
+);
+
+
+
+
+============ INSERTION DES VALEURS ===================
+
+
+INSERT INTO client VALUES
+ (1,'Benali','Amine','Tanger','2023-01-15'),
+ (2,'El Idrissi','Sara','Casablanca','2023-03-02'),
+ (3,'Alaoui','Youssef','Rabat','2023-06-20'),
+ (4,'Tazi','Khadija','Tanger','2024-01-10'),
+ (5,'Chraibi','Omar','Fès','2024-02-25'),
+ (6,'Berrada','Lina','Casablanca','2024-05-30');
+
+INSERT INTO produit VALUES
+ (1,'Clavier mécanique','Accessoires',450,25),
+ (2,'Souris sans fil','Accessoires',180,40),
+ (3,'Écran 24 pouces','Écrans',1500,12),
+ (4,'Écran 27 pouces','Écrans',2300,8),
+ (5,'Ordinateur portable','Ordinateurs',7500,6),
+ (6,'Casque audio','Audio',600,30),
+ (7,'Webcam HD','Accessoires',350,0),
+ (8,'Imprimante','Périphériques',1800,5);
+
+INSERT INTO commande VALUES
+ (101,1,'2024-09-05','livree'),
+ (102,1,'2024-11-12','livree'),
+ (103,2,'2024-09-18','livree'),
+ (104,3,'2024-10-02','annulee'),
+ (105,4,'2024-10-15','livree'),
+ (106,2,'2024-11-03','en_cours'),
+ (107,5,'2024-11-20','en_cours'),
+ (108,4,'2024-12-01','livree'),
+ (109,1,'2024-12-10','en_cours'),
+ (110,3,'2024-12-15','livree');
+
+INSERT INTO ligne_commande VALUES
+ (101,1,1),(101,2,2),(102,5,1),(103,3,2),(103,6,1),(104,4,1),
+ (105,2,3),(105,1,1),(105,7,1),(106,5,1),(106,6,2),(107,3,1),
+ (108,4,2),(108,2,1),(109,6,1),(109,1,2),(110,5,1),(110,3,1);
+
+
+
+
+
+
