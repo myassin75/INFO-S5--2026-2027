@@ -2,9 +2,8 @@ name: Sync Google Drive to GitHub
 
 on:
   schedule:
-    # يعمل تلقائياً كل ساعة (يمكنك تعديل الوقت كما تريد)
     - cron: '0 * * * *'
-  workflow_dispatch: # يسمح لك بتشغيله يدوياً بضغطة زر متى شئت
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -21,7 +20,7 @@ jobs:
 
       - name: Download Files from Google Drive
         run: |
-          gdown --folder https://drive.google.com/drive/folders/1qf3EQw_gv92r8HyXJRfypWLnFaJm--e5 -O ./ --remaining-ok
+          gdown --folder https://drive.google.com/drive/folders/1qf3EQw_gv92r8HyXJRfypWLnFaJm--e5 -O ./
 
       - name: Commit and Push Changes
         run: |
